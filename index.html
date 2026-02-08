@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bản Kê Tiền Mặt v3</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: sans-serif; margin: 0; padding: 10px; background: #d1d8e0; height: 100vh; display: flex; flex-direction: column; }
+
+        /* Màn hình hiển thị */
+        #screen {
+            background: #1a1a1a; color: #00ff00; padding: 15px;
+            border-radius: 12px; text-align: right; margin-bottom: 10px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.5); border: 2px solid #444;
+        }
+        #history { font-size: 0.9rem; color: #888; min-height: 1.2rem; margin-bottom: 5px; overflow-x: auto; white-space: nowrap; }
+        #current { font-size: 2.2rem; font-weight: bold; }
+
+        /* Bố cục bàn phím */
+        .keyboard { display: grid; grid-template-columns: 2.5fr 1fr; gap: 10px; flex-grow: 1; }
+        .left-side { display: flex; flex-direction: column; gap: 10px; }
+        
+        .denoms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex-grow: 1; }
+
+        .right-side { display: grid; grid-template-rows: 1fr 1fr 2fr; gap: 10px; }
+
+        /* Nút bấm */
+        .btn {
+            border: none; border-radius: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px #95a5a6; cursor: pointer; transition: all 0.05s;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px #7f8c8d; }
+
+        .btn-denom { background: #fff; height: 50px; font-size: 0.9rem; border: 1px solid #bdc3c7; }
+        .btn-denom.active { background: #f1c40f; border-color: #f39c12; box-shadow: 0 5px #d35400; color: #000; }
+        
+        .btn-num { background: #fff; font-size: 1.8rem; height: 100%; color: #2c3e50; }
+        .btn-zero { grid-column: span 3; height: 65px; }
+
+        .btn-del { background: #e74c3c; color: white; font-size: 1.1rem; box-shadow: 0 5px #c0392b; }
+        .btn-print { background: #3498db; color: white; font-size: 1.1rem; box-shadow: 0 5px #2980b9; }
+        
+        /* ENTER LỚN GẤP ĐÔI */
+        .btn-enter { background: #27ae60; color: white; font-size: 1.8rem; box-shadow: 0 5px #1e8449; }
+
+    </style>
+</head>
+<body>
+
+<div id="screen">
+    <div id="history"></div>
+    <div id="current">0</div>
+</div>
+
+<div class="keyboard">
+    <div class="left-side">
+        <div class="denoms">
+            <button class="btn btn-denom" onclick="sel(500000)">500k</button>
+            <button class="btn btn-denom" onclick="sel(200000)">200k</button>
+            <button class="btn btn-denom" onclick="sel(100000)">100k</button>
+            <button class="btn btn-denom" onclick="sel(50000)">50k</button>
+            <button class="btn btn-denom" onclick="sel(20000)">20k</button>
+            <button class="btn btn-denom" onclick="sel(10000)">10k</button>
+        </div>
+        <div class="numbers">
+            <button class="btn btn-num" onclick="num('7')">7</button>
+            <button class="btn btn-num" onclick="num('8')">8</button>
+            <button class="btn btn-num" onclick="num('9')">9</button>
+            <button class="btn btn-num" onclick="num('4')">4</button>
+            <button class="btn btn-num" onclick="num('5')">5</button>
+            <button class="btn btn-num" onclick="num('6')">6</button>
+            <button class="btn btn-num" onclick="num('1')">1</button>
+            <button class="btn btn-num" onclick="num('2')">2</button>
+            <button class="btn btn-num" onclick="num('3')">3</button>
+            <button class="btn btn-num btn-zero" onclick="num('0')">0</button>
+        </div>
+    </div>
+
+    <div class="right-side">
+        <button class="btn btn-del" onclick="del()">XOÁ</button>
+        <button class="btn btn-print" onclick="doPrint()">IN</button>
+        <button class="btn btn-enter" onclick="ent()">ENTER</button>
+    </div>
+</div>
+
+<script>
+    let list = []; let d = null; let q = "";
+
+    function sel(v) {
+        d = v; q = ""; update();
+        document.querySelectorAll('.btn-denom').forEach(b => {
+            b.classList.toggle('active', parseInt(b.innerText.replace('k',''))*1000 === v);
+        });
+    }
+
+    function num(n) { if(!d) return; q += n; update(); }
+
+    function del() {
+        if(q.length > 0) q = q.slice(0,-1);
+        else list.pop();
+        update();
+    }
+
+    function ent() {
+        if(d && q) {
+            list.push({d: d, q: parseInt(q)});
+            d = null; q = "";
+            document.querySelectorAll('.btn-denom').forEach(b => b.classList.remove('active'));
+            update();
+        }
+    }
+
+    function update() {
+        document.getElementById('history').innerText = list.map(i => `${i.d.toLocaleString()}x${i.q}`).join(" + ");
+        document.getElementById('current').innerText = d ? `${d.toLocaleString()} x ${q || '_'}` : "0";
+    }
+
+    function doPrint() {
+        if (list.length === 0 && (!d || !q)) { alert("Chưa có nội dung!"); return; }
+        if (d && q) ent();
+
+        let total = 0;
+        let g = {};
+        list.forEach(i => g[i.d] = (g[i.d] || 0) + i.q);
+        
+        let tableRows = "";
+        Object.keys(g).sort((a,b) => b-a).forEach(k => {
+            let m = parseInt(k); let s = g[k]; let tt = m * s;
+            total += tt;
+            tableRows += `<tr><td style="text-align:center">${m.toLocaleString()}</td><td style="text-align:center">${s}</td><td style="text-align:right">${tt.toLocaleString()}</td></tr>`;
+        });
+
+        // Tạo nội dung in hoàn toàn mới để tránh lỗi trang trắng
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head><title>In Bản Kê</title><style>
+                body { font-family: Arial; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { border: 1px solid black; padding: 10px; }
+                .t-center { text-align: center; }
+                .f-footer { display: flex; justify-content: space-between; margin-top: 50px; }
+            </style></head>
+            <body>
+                <h2 class="t-center">BẢN KÊ TIỀN MẶT</h2>
+                <p class="t-center">Ngày: ${new Date().toLocaleDateString('vi-VN')}</p>
+                <table>
+                    <thead><tr><th>Mệnh giá</th><th>Số lượng</th><th>Thành tiền</th></tr></thead>
+                    <tbody>${tableRows}</tbody>
+                    <tfoot><tr style="font-weight:bold"><td colspan="2" class="t-center">TỔNG CỘNG</td><td style="text-align:right">${total.toLocaleString()} VNĐ</td></tr></tfoot>
+                </table>
+                <div class="f-footer">
+                    <div class="t-center"><p><strong>Người lập bản kê</strong></p><br><br><p>(Ký, họ tên)</p></div>
+                    <div style="text-align: right;"><p>Ngày....tháng....năm 20...</p></div>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    }
+</script>
+</body>
+</html>
