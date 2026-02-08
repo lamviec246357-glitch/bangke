@@ -3,86 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bản Kê Tiền Mặt v3</title>
+    <title>Bản Kê Tiền Mặt</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: sans-serif; margin: 0; padding: 10px; background: #d1d8e0; height: 100vh; display: flex; flex-direction: column; }
+        body { font-family: sans-serif; margin: 0; padding: 10px; background: #cfd8dc; }
 
-        /* Màn hình hiển thị */
+        /* Giao diện chính */
+        #app-ui { display: flex; flex-direction: column; height: 95vh; }
+
         #screen {
-            background: #1a1a1a; color: #00ff00; padding: 15px;
-            border-radius: 12px; text-align: right; margin-bottom: 10px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.5); border: 2px solid #444;
+            background: #1a1a1a; color: #00ff00; padding: 12px;
+            border-radius: 10px; text-align: right; margin-bottom: 10px;
+            border: 2px solid #444; min-height: 80px;
         }
-        #history { font-size: 0.9rem; color: #888; min-height: 1.2rem; margin-bottom: 5px; overflow-x: auto; white-space: nowrap; }
-        #current { font-size: 2.2rem; font-weight: bold; }
+        #history { font-size: 0.85rem; color: #888; min-height: 1.2rem; margin-bottom: 5px; white-space: nowrap; overflow-x: auto; }
+        #current { font-size: 2rem; font-weight: bold; }
 
         /* Bố cục bàn phím */
-        .keyboard { display: grid; grid-template-columns: 2.5fr 1fr; gap: 10px; flex-grow: 1; }
-        .left-side { display: flex; flex-direction: column; gap: 10px; }
+        .keyboard { display: grid; grid-template-columns: 3fr 1fr; gap: 8px; flex-grow: 1; }
         
-        .denoms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        /* Cột bên trái: Mệnh giá và Số */
+        .left-col { display: flex; flex-direction: column; gap: 8px; }
+        .denoms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex-grow: 1; }
 
-        .right-side { display: grid; grid-template-rows: 1fr 1fr 2fr; gap: 10px; }
+        /* Cột bên phải: Chức năng */
+        .right-col { display: flex; flex-direction: column; gap: 8px; }
 
         /* Nút bấm */
         .btn {
-            border: none; border-radius: 12px; font-weight: bold;
+            border: none; border-radius: 8px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px #95a5a6; cursor: pointer; transition: all 0.05s;
+            box-shadow: 0 4px #90a4ae; cursor: pointer; background: #fff; color: #263238;
         }
-        .btn:active { transform: translateY(3px); box-shadow: 0 2px #7f8c8d; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px #78909c; }
 
-        .btn-denom { background: #fff; height: 50px; font-size: 0.9rem; border: 1px solid #bdc3c7; }
-        .btn-denom.active { background: #f1c40f; border-color: #f39c12; box-shadow: 0 5px #d35400; color: #000; }
+        .btn-denom { height: 45px; font-size: 0.85rem; border: 1px solid #b0bec5; }
+        .btn-denom.active { background: #ffc107; border: none; box-shadow: 0 4px #ffa000; }
         
-        .btn-num { background: #fff; font-size: 1.8rem; height: 100%; color: #2c3e50; }
-        .btn-zero { grid-column: span 3; height: 65px; }
-
-        .btn-del { background: #e74c3c; color: white; font-size: 1.1rem; box-shadow: 0 5px #c0392b; }
-        .btn-print { background: #3498db; color: white; font-size: 1.1rem; box-shadow: 0 5px #2980b9; }
+        .btn-num { font-size: 1.6rem; height: 100%; }
+        .btn-del { background: #ff5252; color: white; height: 60px; box-shadow: 0 4px #d32f2f; }
+        .btn-print { background: #2196f3; color: white; height: 60px; box-shadow: 0 4px #1976d2; }
         
-        /* ENTER LỚN GẤP ĐÔI */
-        .btn-enter { background: #27ae60; color: white; font-size: 1.8rem; box-shadow: 0 5px #1e8449; }
+        /* Nút 0 và Enter ở hàng cuối */
+        .btn-zero { grid-column: span 2; height: 70px; }
+        .btn-enter { background: #4caf50; color: white; height: 70px; font-size: 1.2rem; box-shadow: 0 4px #388e3c; }
 
+        /* PHẦN DÀNH CHO IN ẤN */
+        #print-content { display: none; }
+
+        @media print {
+            #app-ui { display: none !important; }
+            #print-content { display: block !important; padding: 20px; background: white; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid black; padding: 10px; text-align: right; }
+            .txt-center { text-align: center; }
+            .sign-section { display: flex; justify-content: space-between; margin-top: 50px; }
+        }
     </style>
 </head>
 <body>
 
-<div id="screen">
-    <div id="history"></div>
-    <div id="current">0</div>
-</div>
-
-<div class="keyboard">
-    <div class="left-side">
-        <div class="denoms">
-            <button class="btn btn-denom" onclick="sel(500000)">500k</button>
-            <button class="btn btn-denom" onclick="sel(200000)">200k</button>
-            <button class="btn btn-denom" onclick="sel(100000)">100k</button>
-            <button class="btn btn-denom" onclick="sel(50000)">50k</button>
-            <button class="btn btn-denom" onclick="sel(20000)">20k</button>
-            <button class="btn btn-denom" onclick="sel(10000)">10k</button>
-        </div>
-        <div class="numbers">
-            <button class="btn btn-num" onclick="num('7')">7</button>
-            <button class="btn btn-num" onclick="num('8')">8</button>
-            <button class="btn btn-num" onclick="num('9')">9</button>
-            <button class="btn btn-num" onclick="num('4')">4</button>
-            <button class="btn btn-num" onclick="num('5')">5</button>
-            <button class="btn btn-num" onclick="num('6')">6</button>
-            <button class="btn btn-num" onclick="num('1')">1</button>
-            <button class="btn btn-num" onclick="num('2')">2</button>
-            <button class="btn btn-num" onclick="num('3')">3</button>
-            <button class="btn btn-num btn-zero" onclick="num('0')">0</button>
-        </div>
+<div id="app-ui">
+    <div id="screen">
+        <div id="history"></div>
+        <div id="current">0</div>
     </div>
 
-    <div class="right-side">
-        <button class="btn btn-del" onclick="del()">XOÁ</button>
-        <button class="btn btn-print" onclick="doPrint()">IN</button>
-        <button class="btn btn-enter" onclick="ent()">ENTER</button>
+    <div class="keyboard">
+        <div class="left-col">
+            <div class="denoms">
+                <button class="btn btn-denom" onclick="sel(500000)">500k</button>
+                <button class="btn btn-denom" onclick="sel(200000)">200k</button>
+                <button class="btn btn-denom" onclick="sel(100000)">100k</button>
+                <button class="btn btn-denom" onclick="sel(50000)">50k</button>
+                <button class="btn btn-denom" onclick="sel(20000)">20k</button>
+                <button class="btn btn-denom" onclick="sel(10000)">10k</button>
+            </div>
+            <div class="numbers">
+                <button class="btn btn-num" onclick="num('7')">7</button>
+                <button class="btn btn-num" onclick="num('8')">8</button>
+                <button class="btn btn-num" onclick="num('9')">9</button>
+                <button class="btn btn-num" onclick="num('4')">4</button>
+                <button class="btn btn-num" onclick="num('5')">5</button>
+                <button class="btn btn-num" onclick="num('6')">6</button>
+                <button class="btn btn-num" onclick="num('1')">1</button>
+                <button class="btn btn-num" onclick="num('2')">2</button>
+                <button class="btn btn-num" onclick="num('3')">3</button>
+                <button class="btn btn-num btn-zero" onclick="num('0')">0</button>
+                <button class="btn btn-enter" onclick="ent()">ENTER</button>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <button class="btn btn-del" onclick="del()">XOÁ</button>
+            <button class="btn btn-print" onclick="doPrint()">IN</button>
+        </div>
+    </div>
+</div>
+
+<div id="print-content">
+    <h2 class="txt-center">BẢN KÊ TIỀN MẶT</h2>
+    <p id="p-date" class="txt-center"></p>
+    <table id="p-table">
+        <thead>
+            <tr>
+                <th class="txt-center">Mệnh giá</th>
+                <th class="txt-center">Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody id="p-body"></tbody>
+        <tfoot>
+            <tr style="font-weight:bold; background:#f0f0f0;">
+                <td colspan="2" class="txt-center">TỔNG CỘNG</td>
+                <td id="p-total"></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="sign-section">
+        <div class="txt-center">
+            <p><strong>Người lập bản kê</strong></p>
+            <br><br><br>
+            <p>(Ký và ghi họ tên)</p>
+        </div>
+        <div style="text-align: right;">
+            <p>Ngày....tháng....năm 20...</p>
+        </div>
     </div>
 </div>
 
@@ -92,7 +139,8 @@
     function sel(v) {
         d = v; q = ""; update();
         document.querySelectorAll('.btn-denom').forEach(b => {
-            b.classList.toggle('active', parseInt(b.innerText.replace('k',''))*1000 === v);
+            let val = parseInt(b.innerText.replace('k','')) * 1000;
+            b.classList.toggle('active', val === v);
         });
     }
 
@@ -119,49 +167,26 @@
     }
 
     function doPrint() {
-        if (list.length === 0 && (!d || !q)) { alert("Chưa có nội dung!"); return; }
+        if (list.length === 0 && (!d || !q)) { alert("Chưa có dữ liệu!"); return; }
         if (d && q) ent();
 
+        const body = document.getElementById('p-body');
+        body.innerHTML = "";
         let total = 0;
         let g = {};
         list.forEach(i => g[i.d] = (g[i.d] || 0) + i.q);
         
-        let tableRows = "";
         Object.keys(g).sort((a,b) => b-a).forEach(k => {
             let m = parseInt(k); let s = g[k]; let tt = m * s;
             total += tt;
-            tableRows += `<tr><td style="text-align:center">${m.toLocaleString()}</td><td style="text-align:center">${s}</td><td style="text-align:right">${tt.toLocaleString()}</td></tr>`;
+            body.innerHTML += `<tr><td class="txt-center">${m.toLocaleString()}</td><td class="txt-center">${s}</td><td>${tt.toLocaleString()}</td></tr>`;
         });
 
-        // Tạo nội dung in hoàn toàn mới để tránh lỗi trang trắng
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-            <head><title>In Bản Kê</title><style>
-                body { font-family: Arial; padding: 20px; }
-                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                th, td { border: 1px solid black; padding: 10px; }
-                .t-center { text-align: center; }
-                .f-footer { display: flex; justify-content: space-between; margin-top: 50px; }
-            </style></head>
-            <body>
-                <h2 class="t-center">BẢN KÊ TIỀN MẶT</h2>
-                <p class="t-center">Ngày: ${new Date().toLocaleDateString('vi-VN')}</p>
-                <table>
-                    <thead><tr><th>Mệnh giá</th><th>Số lượng</th><th>Thành tiền</th></tr></thead>
-                    <tbody>${tableRows}</tbody>
-                    <tfoot><tr style="font-weight:bold"><td colspan="2" class="t-center">TỔNG CỘNG</td><td style="text-align:right">${total.toLocaleString()} VNĐ</td></tr></tfoot>
-                </table>
-                <div class="f-footer">
-                    <div class="t-center"><p><strong>Người lập bản kê</strong></p><br><br><p>(Ký, họ tên)</p></div>
-                    <div style="text-align: right;"><p>Ngày....tháng....năm 20...</p></div>
-                </div>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+        document.getElementById('p-total').innerText = total.toLocaleString() + " VNĐ";
+        document.getElementById('p-date').innerText = "Ngày lập: " + new Date().toLocaleDateString('vi-VN');
+        
+        // Gọi lệnh in trực tiếp của hệ thống
+        window.print();
     }
 </script>
 </body>
