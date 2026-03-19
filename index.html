@@ -1,193 +1,530 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bản Kê Tiền Mặt</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: sans-serif; margin: 0; padding: 10px; background: #cfd8dc; }
-
-        /* Giao diện chính */
-        #app-ui { display: flex; flex-direction: column; height: 95vh; }
-
-        #screen {
-            background: #1a1a1a; color: #00ff00; padding: 12px;
-            border-radius: 10px; text-align: right; margin-bottom: 10px;
-            border: 2px solid #444; min-height: 80px;
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #22263a;
+            --border: #2e3350;
+            --accent: #4ade80;
+            --accent-dim: rgba(74,222,128,0.12);
+            --accent-glow: rgba(74,222,128,0.25);
+            --text: #e8eaf0;
+            --text-dim: #6b7280;
+            --red: #f87171;
+            --blue: #60a5fa;
+            --amber: #fbbf24;
+            --radius: 14px;
+            --radius-sm: 10px;
         }
-        #history { font-size: 0.85rem; color: #888; min-height: 1.2rem; margin-bottom: 5px; white-space: nowrap; overflow-x: auto; }
-        #current { font-size: 2rem; font-weight: bold; }
 
-        /* Bố cục bàn phím */
-        .keyboard { display: grid; grid-template-columns: 3fr 1fr; gap: 8px; flex-grow: 1; }
-        
-        /* Cột bên trái: Mệnh giá và Số */
-        .left-col { display: flex; flex-direction: column; gap: 8px; }
-        .denoms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-        .numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex-grow: 1; }
+```
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
-        /* Cột bên phải: Chức năng */
-        .right-col { display: flex; flex-direction: column; gap: 8px; }
+    body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        gap: 10px;
+        overflow: hidden;
+    }
 
-        /* Nút bấm */
-        .btn {
-            border: none; border-radius: 8px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px #90a4ae; cursor: pointer; background: #fff; color: #263238;
-        }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #78909c; }
+    /* ── Header ── */
+    .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2px;
+    }
+    .app-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+    }
+    .app-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-        .btn-denom { height: 45px; font-size: 0.85rem; border: 1px solid #b0bec5; }
-        .btn-denom.active { background: #ffc107; border: none; box-shadow: 0 4px #ffa000; }
-        
-        .btn-num { font-size: 1.6rem; height: 100%; }
-        .btn-del { background: #ff5252; color: white; height: 60px; box-shadow: 0 4px #d32f2f; }
-        .btn-print { background: #2196f3; color: white; height: 60px; box-shadow: 0 4px #1976d2; }
-        
-        /* Nút 0 và Enter ở hàng cuối */
-        .btn-zero { grid-column: span 2; height: 70px; }
-        .btn-enter { background: #4caf50; color: white; height: 70px; font-size: 1.2rem; box-shadow: 0 4px #388e3c; }
+    /* ── Screen ── */
+    #screen {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        min-height: 88px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    #history {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        white-space: nowrap;
+        overflow-x: auto;
+        letter-spacing: 0.03em;
+    }
+    #current {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-align: right;
+        text-shadow: 0 0 20px var(--accent-glow);
+        letter-spacing: 0.02em;
+        line-height: 1;
+        margin-top: 6px;
+    }
 
-        /* PHẦN DÀNH CHO IN ẤN */
-        #print-content { display: none; }
+    /* ── Main keyboard layout ── */
+    .keyboard {
+        display: grid;
+        grid-template-columns: 1fr 72px;
+        gap: 10px;
+        flex: 1;
+        min-height: 0;
+    }
 
-        @media print {
-            #app-ui { display: none !important; }
-            #print-content { display: block !important; padding: 20px; background: white; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid black; padding: 10px; text-align: right; }
-            .txt-center { text-align: center; }
-            .sign-section { display: flex; justify-content: space-between; margin-top: 50px; }
-        }
-    </style>
+    .left-col {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 0;
+    }
+
+    /* ── Denomination buttons ── */
+    .denoms {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+    }
+
+    .btn-m {
+        height: 52px;
+        border: 1.5px solid transparent;
+        border-radius: var(--radius-sm);
+        color: #fff;
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.02em;
+        transition: transform 0.1s, box-shadow 0.1s, border-color 0.15s;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-m::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0.07);
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    .btn-m:active { transform: scale(0.95); }
+    .btn-m:active::after { opacity: 1; }
+    .btn-m.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow), inset 0 0 12px rgba(255,255,255,0.08);
+        transform: scale(1.03);
+    }
+
+    /* Denomination colors — refined palette */
+    .m500 { background: linear-gradient(145deg, #00695c, #004d40); }
+    .m200 { background: linear-gradient(145deg, #b71c1c, #7f0000); }
+    .m100 { background: linear-gradient(145deg, #2e7d32, #1b5e20); }
+    .m50  { background: linear-gradient(145deg, #e64a19, #bf360c); }
+    .m20  { background: linear-gradient(145deg, #1565c0, #0d47a1); }
+    .m10  { background: linear-gradient(145deg, #5d4037, #3e2723); }
+
+    /* ── Number pad ── */
+    .numbers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .btn {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        color: var(--text);
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.08s, background 0.1s;
+        font-size: 1.5rem;
+    }
+    .btn:active {
+        transform: scale(0.93);
+        background: var(--surface2);
+    }
+    .btn-zero { grid-column: span 3; }
+
+    /* ── Right column ── */
+    .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .btn-action {
+        flex: 1;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-weight: 700;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        transition: transform 0.08s, filter 0.1s;
+    }
+    .btn-action svg { width: 18px; height: 18px; }
+    .btn-action:active { transform: scale(0.93); filter: brightness(0.85); }
+
+    .btn-del {
+        background: linear-gradient(160deg, #ef4444, #b91c1c);
+        color: #fff;
+    }
+    .btn-export {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+    }
+    .btn-enter {
+        background: linear-gradient(160deg, #4ade80, #16a34a);
+        color: #fff;
+        flex: 2;
+        font-size: 0.7rem;
+    }
+
+    /* ── Receipt overlay ── */
+    #receipt-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        padding: 20px;
+        gap: 16px;
+    }
+
+    #receipt-content {
+        width: 100%;
+        max-width: 340px;
+        background: #fff;
+        color: #1a1a2e;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .r-header {
+        background: linear-gradient(135deg, #1b5e20, #2e7d32);
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+    }
+    .r-check {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 1.4rem;
+    }
+    .r-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 4px; }
+    .r-date { font-size: 0.72rem; opacity: 0.75; }
+
+    .r-body { padding: 16px 20px; max-height: 240px; overflow-y: auto; }
+
+    .r-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 0;
+        border-bottom: 1px dashed #e5e7eb;
+        font-size: 0.9rem;
+    }
+    .r-line:last-child { border-bottom: none; }
+    .r-line .denom { color: #4b5563; font-weight: 500; }
+    .r-line .amount { font-weight: 700; color: #1a1a2e; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; }
+
+    .r-total-wrap {
+        margin: 0 20px 20px;
+        background: #f0fdf4;
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .r-total-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; color: #6b7280; text-transform: uppercase; }
+    .r-total-val { font-family: 'IBM Plex Mono', monospace; font-size: 1.2rem; font-weight: 700; color: #16a34a; }
+
+    .r-footer { text-align: center; font-size: 0.68rem; color: #9ca3af; padding: 0 20px 16px; }
+
+    /* Receipt action buttons */
+    .r-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        width: 100%;
+        max-width: 340px;
+    }
+    .btn-act {
+        padding: 13px 8px;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-weight: 700;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        transition: transform 0.1s;
+    }
+    .btn-act:active { transform: scale(0.95); }
+    .btn-act svg { width: 20px; height: 20px; }
+    .btn-save { background: #4ade80; color: #052e16; }
+    .btn-share { background: #60a5fa; color: #0c1445; }
+    .btn-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
+</style>
+```
+
 </head>
 <body>
 
-<div id="app-ui">
-    <div id="screen">
-        <div id="history"></div>
-        <div id="current">0</div>
-    </div>
+<!-- Header -->
 
-    <div class="keyboard">
-        <div class="left-col">
-            <div class="denoms">
-                <button class="btn btn-denom" onclick="sel(500000)">500k</button>
-                <button class="btn btn-denom" onclick="sel(200000)">200k</button>
-                <button class="btn btn-denom" onclick="sel(100000)">100k</button>
-                <button class="btn btn-denom" onclick="sel(50000)">50k</button>
-                <button class="btn btn-denom" onclick="sel(20000)">20k</button>
-                <button class="btn btn-denom" onclick="sel(10000)">10k</button>
-            </div>
-            <div class="numbers">
-                <button class="btn btn-num" onclick="num('7')">7</button>
-                <button class="btn btn-num" onclick="num('8')">8</button>
-                <button class="btn btn-num" onclick="num('9')">9</button>
-                <button class="btn btn-num" onclick="num('4')">4</button>
-                <button class="btn btn-num" onclick="num('5')">5</button>
-                <button class="btn btn-num" onclick="num('6')">6</button>
-                <button class="btn btn-num" onclick="num('1')">1</button>
-                <button class="btn btn-num" onclick="num('2')">2</button>
-                <button class="btn btn-num" onclick="num('3')">3</button>
-                <button class="btn btn-num btn-zero" onclick="num('0')">0</button>
-                <button class="btn btn-enter" onclick="ent()">ENTER</button>
-            </div>
+<div class="app-header">
+    <span class="app-title">Bản Kê Tiền Mặt</span>
+    <div class="app-dot"></div>
+</div>
+
+<!-- Screen -->
+
+<div id="screen">
+    <div id="history">---</div>
+    <div id="current">0</div>
+</div>
+
+<!-- Keyboard -->
+
+<div class="keyboard">
+    <div class="left-col">
+        <!-- Denominations -->
+        <div class="denoms">
+            <button class="btn-m m500" onclick="sel(500000, this)">500K</button>
+            <button class="btn-m m200" onclick="sel(200000, this)">200K</button>
+            <button class="btn-m m100" onclick="sel(100000, this)">100K</button>
+            <button class="btn-m m50"  onclick="sel(50000, this)">50K</button>
+            <button class="btn-m m20"  onclick="sel(20000, this)">20K</button>
+            <button class="btn-m m10"  onclick="sel(10000, this)">10K</button>
         </div>
 
-        <div class="right-col">
-            <button class="btn btn-del" onclick="del()">XOÁ</button>
-            <button class="btn btn-print" onclick="doPrint()">IN</button>
-        </div>
+```
+    <!-- Numbers -->
+    <div class="numbers">
+        <button class="btn" onclick="num('7')">7</button>
+        <button class="btn" onclick="num('8')">8</button>
+        <button class="btn" onclick="num('9')">9</button>
+        <button class="btn" onclick="num('4')">4</button>
+        <button class="btn" onclick="num('5')">5</button>
+        <button class="btn" onclick="num('6')">6</button>
+        <button class="btn" onclick="num('1')">1</button>
+        <button class="btn" onclick="num('2')">2</button>
+        <button class="btn" onclick="num('3')">3</button>
+        <button class="btn btn-zero" onclick="num('0')">0</button>
     </div>
 </div>
 
-<div id="print-content">
-    <h2 class="txt-center">BẢN KÊ TIỀN MẶT</h2>
-    <p id="p-date" class="txt-center"></p>
-    <table id="p-table">
-        <thead>
-            <tr>
-                <th class="txt-center">Mệnh giá</th>
-                <th class="txt-center">Số lượng</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody id="p-body"></tbody>
-        <tfoot>
-            <tr style="font-weight:bold; background:#f0f0f0;">
-                <td colspan="2" class="txt-center">TỔNG CỘNG</td>
-                <td id="p-total"></td>
-            </tr>
-        </tfoot>
-    </table>
-    <div class="sign-section">
-        <div class="txt-center">
-            <p><strong>Người lập bản kê</strong></p>
-            <br><br><br>
-            <p>(Ký và ghi họ tên)</p>
+<!-- Action column -->
+<div class="right-col">
+    <button class="btn-action btn-del" onclick="del()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
+        </svg>
+        Xoá
+    </button>
+    <button class="btn-action btn-export" onclick="showReceipt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        Xuất
+    </button>
+    <button class="btn-action btn-enter" onclick="ent()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Enter
+    </button>
+</div>
+```
+
+</div>
+
+<!-- Receipt overlay -->
+
+<div id="receipt-overlay">
+    <div id="receipt-content">
+        <div class="r-header">
+            <div class="r-check">✓</div>
+            <div class="r-title">BẢN KÊ TIỀN MẶT</div>
+            <div class="r-date" id="r-date"></div>
         </div>
-        <div style="text-align: right;">
-            <p>Ngày....tháng....năm 20...</p>
+        <div class="r-body" id="r-items"></div>
+        <div class="r-total-wrap">
+            <div class="r-total-label">Tổng cộng</div>
+            <div class="r-total-val" id="r-total-val"></div>
         </div>
+        <div class="r-footer">Cảm ơn bạn đã sử dụng dịch vụ</div>
     </div>
+
+```
+<div class="r-actions">
+    <button class="btn-act btn-save" onclick="saveImage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Lưu ảnh
+    </button>
+    <button class="btn-act btn-share" onclick="shareImage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Zalo
+    </button>
+    <button class="btn-act btn-close" onclick="closeReceipt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Thoát
+    </button>
+</div>
+```
+
 </div>
 
 <script>
-    let list = []; let d = null; let q = "";
+    let list = [], d = null, q = "";
 
-    function sel(v) {
+    function sel(v, el) {
         d = v; q = ""; update();
-        document.querySelectorAll('.btn-denom').forEach(b => {
-            let val = parseInt(b.innerText.replace('k','')) * 1000;
-            b.classList.toggle('active', val === v);
-        });
+        document.querySelectorAll('.btn-m').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
     }
 
-    function num(n) { if(!d) return; q += n; update(); }
+    function num(n) { if (!d) return; q += n; update(); }
 
     function del() {
-        if(q.length > 0) q = q.slice(0,-1);
+        if (q.length > 0) q = q.slice(0, -1);
         else list.pop();
         update();
     }
 
     function ent() {
-        if(d && q) {
-            list.push({d: d, q: parseInt(q)});
+        if (d && q) {
+            list.push({ d, q: parseInt(q) });
             d = null; q = "";
-            document.querySelectorAll('.btn-denom').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.btn-m').forEach(b => b.classList.remove('active'));
             update();
         }
     }
 
+    function fmt(n) { return n.toLocaleString('vi-VN'); }
+
     function update() {
-        document.getElementById('history').innerText = list.map(i => `${i.d.toLocaleString()}x${i.q}`).join(" + ");
-        document.getElementById('current').innerText = d ? `${d.toLocaleString()} x ${q || '_'}` : "0";
+        document.getElementById('history').innerText = list.length > 0
+            ? list.map(i => `${i.d / 1000}k×${i.q}`).join(' + ')
+            : '---';
+        document.getElementById('current').innerText = d
+            ? `${fmt(d)} × ${q || '_'}`
+            : '0';
     }
 
-    function doPrint() {
-        if (list.length === 0 && (!d || !q)) { alert("Chưa có dữ liệu!"); return; }
+    function showReceipt() {
+        if (list.length === 0 && (!d || !q)) return;
         if (d && q) ent();
-
-        const body = document.getElementById('p-body');
-        body.innerHTML = "";
-        let total = 0;
-        let g = {};
+        const itemsDiv = document.getElementById('r-items');
+        itemsDiv.innerHTML = '';
+        let total = 0, g = {};
         list.forEach(i => g[i.d] = (g[i.d] || 0) + i.q);
-        
-        Object.keys(g).sort((a,b) => b-a).forEach(k => {
-            let m = parseInt(k); let s = g[k]; let tt = m * s;
+        Object.keys(g).sort((a, b) => b - a).forEach(k => {
+            const m = parseInt(k), s = g[k], tt = m * s;
             total += tt;
-            body.innerHTML += `<tr><td class="txt-center">${m.toLocaleString()}</td><td class="txt-center">${s}</td><td>${tt.toLocaleString()}</td></tr>`;
+            itemsDiv.innerHTML += `
+                <div class="r-line">
+                    <span class="denom">${fmt(m)} × ${s}</span>
+                    <span class="amount">${fmt(tt)} đ</span>
+                </div>`;
         });
+        document.getElementById('r-total-val').innerText = fmt(total) + ' đ';
+        document.getElementById('r-date').innerText = new Date().toLocaleString('vi-VN');
+        document.getElementById('receipt-overlay').style.display = 'flex';
+    }
 
-        document.getElementById('p-total').innerText = total.toLocaleString() + " VNĐ";
-        document.getElementById('p-date').innerText = "Ngày lập: " + new Date().toLocaleDateString('vi-VN');
-        
-        // Gọi lệnh in trực tiếp của hệ thống
-        window.print();
+    function closeReceipt() { document.getElementById('receipt-overlay').style.display = 'none'; }
+
+    function saveImage() {
+        html2canvas(document.querySelector('#receipt-content'), { scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'BanKe.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
+    async function shareImage() {
+        const canvas = await html2canvas(document.querySelector('#receipt-content'), { scale: 2 });
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], 'BanKe.png', { type: 'image/png' });
+            if (navigator.share) {
+                try { await navigator.share({ files: [file], title: 'Bản kê' }); } catch (e) {}
+            } else {
+                alert('Hãy nhấn Lưu ảnh rồi gửi qua Zalo!');
+            }
+        });
     }
 </script>
+
 </body>
 </html>
