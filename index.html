@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -25,385 +24,375 @@
             --radius-sm: 10px;
         }
 
-```
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
-    body {
-        font-family: 'Be Vietnam Pro', sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        height: 100dvh;
-        display: flex;
-        flex-direction: column;
-        padding: 12px;
-        gap: 10px;
-        overflow: hidden;
-    }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 10px;
+            overflow: hidden;
+        }
 
-    /* ── Header ── */
-    .app-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 2px;
-    }
-    .app-title {
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--text-dim);
-    }
-    .app-dot {
-        width: 8px; height: 8px;
-        border-radius: 50%;
-        background: var(--accent);
-        box-shadow: 0 0 8px var(--accent);
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        /* ── Header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2px;
+        }
+        .app-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+        .app-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    /* ── Screen ── */
-    #screen {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 14px 18px;
-        min-height: 88px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    #history {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 0.72rem;
-        color: var(--text-dim);
-        white-space: nowrap;
-        overflow-x: auto;
-        letter-spacing: 0.03em;
-    }
-    #current {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--accent);
-        text-align: right;
-        text-shadow: 0 0 20px var(--accent-glow);
-        letter-spacing: 0.02em;
-        line-height: 1;
-        margin-top: 6px;
-    }
+        /* ── Screen ── */
+        #screen {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            min-height: 88px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #history {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow-x: auto;
+            letter-spacing: 0.03em;
+        }
+        #current {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: right;
+            text-shadow: 0 0 20px var(--accent-glow);
+            letter-spacing: 0.02em;
+            line-height: 1;
+            margin-top: 6px;
+        }
 
-    /* ── Main keyboard layout ── */
-    .keyboard {
-        display: grid;
-        grid-template-columns: 1fr 72px;
-        gap: 10px;
-        flex: 1;
-        min-height: 0;
-    }
+        /* ── Main keyboard layout ── */
+        .keyboard {
+            display: grid;
+            grid-template-columns: 1fr 72px;
+            gap: 10px;
+            flex: 1;
+            min-height: 0;
+        }
 
-    .left-col {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        min-height: 0;
-    }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+        }
 
-    /* ── Denomination buttons ── */
-    .denoms {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 7px;
-    }
+        /* ── Denomination buttons ── */
+        .denoms {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
 
-    .btn-m {
-        height: 52px;
-        border: 1.5px solid transparent;
-        border-radius: var(--radius-sm);
-        color: #fff;
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 600;
-        font-size: 0.82rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        letter-spacing: 0.02em;
-        transition: transform 0.1s, box-shadow 0.1s, border-color 0.15s;
-        position: relative;
-        overflow: hidden;
-    }
-    .btn-m::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: rgba(255,255,255,0.07);
-        opacity: 0;
-        transition: opacity 0.15s;
-    }
-    .btn-m:active { transform: scale(0.95); }
-    .btn-m:active::after { opacity: 1; }
-    .btn-m.active {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-glow), inset 0 0 12px rgba(255,255,255,0.08);
-        transform: scale(1.03);
-    }
+        .btn-m {
+            height: 52px;
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.02em;
+            transition: transform 0.1s, box-shadow 0.1s, border-color 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-m::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.07);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .btn-m:active { transform: scale(0.95); }
+        .btn-m:active::after { opacity: 1; }
+        .btn-m.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow), inset 0 0 12px rgba(255,255,255,0.08);
+            transform: scale(1.03);
+        }
 
-    /* Denomination colors — refined palette */
-    .m500 { background: linear-gradient(145deg, #00695c, #004d40); }
-    .m200 { background: linear-gradient(145deg, #b71c1c, #7f0000); }
-    .m100 { background: linear-gradient(145deg, #2e7d32, #1b5e20); }
-    .m50  { background: linear-gradient(145deg, #e64a19, #bf360c); }
-    .m20  { background: linear-gradient(145deg, #1565c0, #0d47a1); }
-    .m10  { background: linear-gradient(145deg, #5d4037, #3e2723); }
+        /* Denomination colors — refined palette */
+        .m500 { background: linear-gradient(145deg, #00695c, #004d40); }
+        .m200 { background: linear-gradient(145deg, #b71c1c, #7f0000); }
+        .m100 { background: linear-gradient(145deg, #2e7d32, #1b5e20); }
+        .m50  { background: linear-gradient(145deg, #e64a19, #bf360c); }
+        .m20  { background: linear-gradient(145deg, #1565c0, #0d47a1); }
+        .m10  { background: linear-gradient(145deg, #5d4037, #3e2723); }
 
-    /* ── Number pad ── */
-    .numbers {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 7px;
-        flex: 1;
-        min-height: 0;
-    }
+        /* ── Number pad ── */
+        .numbers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            flex: 1;
+            min-height: 0;
+        }
 
-    .btn {
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        background: var(--surface);
-        color: var(--text);
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.08s, background 0.1s;
-        font-size: 1.5rem;
-    }
-    .btn:active {
-        transform: scale(0.93);
-        background: var(--surface2);
-    }
-    .btn-zero { grid-column: span 3; }
+        .btn {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.08s, background 0.1s;
+            font-size: 1.5rem;
+        }
+        .btn:active {
+            transform: scale(0.93);
+            background: var(--surface2);
+        }
+        .btn-zero { grid-column: span 3; }
 
-    /* ── Right column ── */
-    .right-col {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-    }
+        /* ── Right column ── */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
 
-    .btn-action {
-        flex: 1;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-family: 'Be Vietnam Pro', sans-serif;
-        font-weight: 700;
-        font-size: 0.65rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 5px;
-        transition: transform 0.08s, filter 0.1s;
-    }
-    .btn-action svg { width: 18px; height: 18px; }
-    .btn-action:active { transform: scale(0.93); filter: brightness(0.85); }
+        .btn-action {
+            flex: 1;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+            transition: transform 0.08s, filter 0.1s;
+        }
+        .btn-action svg { width: 18px; height: 18px; }
+        .btn-action:active { transform: scale(0.93); filter: brightness(0.85); }
 
-    .btn-del {
-        background: linear-gradient(160deg, #ef4444, #b91c1c);
-        color: #fff;
-    }
-    .btn-export {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        color: var(--text-dim);
-    }
-    .btn-enter {
-        background: linear-gradient(160deg, #4ade80, #16a34a);
-        color: #fff;
-        flex: 2;
-        font-size: 0.7rem;
-    }
+        .btn-del {
+            background: linear-gradient(160deg, #ef4444, #b91c1c);
+            color: #fff;
+        }
+        .btn-export {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+        .btn-enter {
+            background: linear-gradient(160deg, #4ade80, #16a34a);
+            color: #fff;
+            flex: 2;
+            font-size: 0.7rem;
+        }
 
-    /* ── Receipt overlay ── */
-    #receipt-overlay {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-        padding: 20px;
-        gap: 16px;
-    }
+        /* ── Receipt overlay ── */
+        #receipt-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            gap: 16px;
+        }
 
-    #receipt-content {
-        width: 100%;
-        max-width: 340px;
-        background: #fff;
-        color: #1a1a2e;
-        border-radius: 20px;
-        overflow: hidden;
-    }
+        #receipt-content {
+            width: 100%;
+            max-width: 340px;
+            background: #fff;
+            color: #1a1a2e;
+            border-radius: 20px;
+            overflow: hidden;
+        }
 
-    .r-header {
-        background: linear-gradient(135deg, #1b5e20, #2e7d32);
-        color: #fff;
-        padding: 20px;
-        text-align: center;
-    }
-    .r-check {
-        width: 44px; height: 44px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 10px;
-        font-size: 1.4rem;
-    }
-    .r-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 4px; }
-    .r-date { font-size: 0.72rem; opacity: 0.75; }
+        .r-header {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .r-check {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.4rem;
+        }
+        .r-title { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 4px; }
+        .r-date { font-size: 0.72rem; opacity: 0.75; }
 
-    .r-body { padding: 16px 20px; max-height: 240px; overflow-y: auto; }
+        .r-body { padding: 16px 20px; max-height: 240px; overflow-y: auto; }
 
-    .r-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 7px 0;
-        border-bottom: 1px dashed #e5e7eb;
-        font-size: 0.9rem;
-    }
-    .r-line:last-child { border-bottom: none; }
-    .r-line .denom { color: #4b5563; font-weight: 500; }
-    .r-line .amount { font-weight: 700; color: #1a1a2e; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; }
+        .r-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px dashed #e5e7eb;
+            font-size: 0.9rem;
+        }
+        .r-line:last-child { border-bottom: none; }
+        .r-line .denom { color: #4b5563; font-weight: 500; }
+        .r-line .amount { font-weight: 700; color: #1a1a2e; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; }
 
-    .r-total-wrap {
-        margin: 0 20px 20px;
-        background: #f0fdf4;
-        border-radius: 12px;
-        padding: 12px 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .r-total-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; color: #6b7280; text-transform: uppercase; }
-    .r-total-val { font-family: 'IBM Plex Mono', monospace; font-size: 1.2rem; font-weight: 700; color: #16a34a; }
+        .r-total-wrap {
+            margin: 0 20px 20px;
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .r-total-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; color: #6b7280; text-transform: uppercase; }
+        .r-total-val { font-family: 'IBM Plex Mono', monospace; font-size: 1.2rem; font-weight: 700; color: #16a34a; }
 
-    .r-footer { text-align: center; font-size: 0.68rem; color: #9ca3af; padding: 0 20px 16px; }
+        .r-footer { text-align: center; font-size: 0.68rem; color: #9ca3af; padding: 0 20px 16px; }
 
-    /* Receipt action buttons */
-    .r-actions {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        width: 100%;
-        max-width: 340px;
-    }
-    .btn-act {
-        padding: 13px 8px;
-        border: none;
-        border-radius: 12px;
-        font-family: 'Be Vietnam Pro', sans-serif;
-        font-weight: 700;
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        transition: transform 0.1s;
-    }
-    .btn-act:active { transform: scale(0.95); }
-    .btn-act svg { width: 20px; height: 20px; }
-    .btn-save { background: #4ade80; color: #052e16; }
-    .btn-share { background: #60a5fa; color: #0c1445; }
-    .btn-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
-</style>
-```
-
+        /* Receipt action buttons */
+        .r-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 340px;
+        }
+        .btn-act {
+            padding: 13px 8px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.1s;
+        }
+        .btn-act:active { transform: scale(0.95); }
+        .btn-act svg { width: 20px; height: 20px; }
+        .btn-save { background: #4ade80; color: #052e16; }
+        .btn-share { background: #60a5fa; color: #0c1445; }
+        .btn-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
+    </style>
 </head>
 <body>
 
 <!-- Header -->
-
 <div class="app-header">
     <span class="app-title">Bản Kê Tiền Mặt</span>
     <div class="app-dot"></div>
 </div>
 
 <!-- Screen -->
-
 <div id="screen">
     <div id="history">---</div>
     <div id="current">0</div>
 </div>
 
 <!-- Keyboard -->
-
 <div class="keyboard">
     <div class="left-col">
         <!-- Denominations -->
         <div class="denoms">
-            <button class="btn-m m500" onclick="sel(500000, this)">500K</button>
-            <button class="btn-m m200" onclick="sel(200000, this)">200K</button>
-            <button class="btn-m m100" onclick="sel(100000, this)">100K</button>
-            <button class="btn-m m50"  onclick="sel(50000, this)">50K</button>
-            <button class="btn-m m20"  onclick="sel(20000, this)">20K</button>
-            <button class="btn-m m10"  onclick="sel(10000, this)">10K</button>
+            <button class="btn-m m500" onclick="playClick('denom'); sel(500000, this)">500K</button>
+            <button class="btn-m m200" onclick="playClick('denom'); sel(200000, this)">200K</button>
+            <button class="btn-m m100" onclick="playClick('denom'); sel(100000, this)">100K</button>
+            <button class="btn-m m50"  onclick="playClick('denom'); sel(50000, this)">50K</button>
+            <button class="btn-m m20"  onclick="playClick('denom'); sel(20000, this)">20K</button>
+            <button class="btn-m m10"  onclick="playClick('denom'); sel(10000, this)">10K</button>
         </div>
 
-```
-    <!-- Numbers -->
-    <div class="numbers">
-        <button class="btn" onclick="num('7')">7</button>
-        <button class="btn" onclick="num('8')">8</button>
-        <button class="btn" onclick="num('9')">9</button>
-        <button class="btn" onclick="num('4')">4</button>
-        <button class="btn" onclick="num('5')">5</button>
-        <button class="btn" onclick="num('6')">6</button>
-        <button class="btn" onclick="num('1')">1</button>
-        <button class="btn" onclick="num('2')">2</button>
-        <button class="btn" onclick="num('3')">3</button>
-        <button class="btn btn-zero" onclick="num('0')">0</button>
+        <!-- Numbers -->
+        <div class="numbers">
+            <button class="btn" onclick="playClick('num'); num('7')">7</button>
+            <button class="btn" onclick="playClick('num'); num('8')">8</button>
+            <button class="btn" onclick="playClick('num'); num('9')">9</button>
+            <button class="btn" onclick="playClick('num'); num('4')">4</button>
+            <button class="btn" onclick="playClick('num'); num('5')">5</button>
+            <button class="btn" onclick="playClick('num'); num('6')">6</button>
+            <button class="btn" onclick="playClick('num'); num('1')">1</button>
+            <button class="btn" onclick="playClick('num'); num('2')">2</button>
+            <button class="btn" onclick="playClick('num'); num('3')">3</button>
+            <button class="btn btn-zero" onclick="playClick('num'); num('0')">0</button>
+        </div>
+    </div>
+
+    <!-- Action column -->
+    <div class="right-col">
+        <button class="btn-action btn-del" onclick="playClick('del'); del()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
+            </svg>
+            Xoá
+        </button>
+        <button class="btn-action btn-export" onclick="playClick('num'); showReceipt()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+            Xuất
+        </button>
+        <button class="btn-action btn-enter" onclick="playClick('enter'); ent()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Enter
+        </button>
     </div>
 </div>
 
-<!-- Action column -->
-<div class="right-col">
-    <button class="btn-action btn-del" onclick="del()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
-        </svg>
-        Xoá
-    </button>
-    <button class="btn-action btn-export" onclick="showReceipt()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
-        </svg>
-        Xuất
-    </button>
-    <button class="btn-action btn-enter" onclick="ent()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        Enter
-    </button>
-</div>
-```
-
-</div>
-
 <!-- Receipt overlay -->
-
 <div id="receipt-overlay">
     <div id="receipt-content">
         <div class="r-header">
@@ -419,32 +408,114 @@
         <div class="r-footer">Cảm ơn bạn đã sử dụng dịch vụ</div>
     </div>
 
-```
-<div class="r-actions">
-    <button class="btn-act btn-save" onclick="saveImage()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Lưu ảnh
-    </button>
-    <button class="btn-act btn-share" onclick="shareImage()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-        </svg>
-        Zalo
-    </button>
-    <button class="btn-act btn-close" onclick="closeReceipt()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-        Thoát
-    </button>
-</div>
-```
-
+    <div class="r-actions">
+        <button class="btn-act btn-save" onclick="playClick('num'); saveImage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Lưu ảnh
+        </button>
+        <button class="btn-act btn-share" onclick="playClick('num'); shareImage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Zalo
+        </button>
+        <button class="btn-act btn-close" onclick="playClick('del'); closeReceipt()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Thoát
+        </button>
+    </div>
 </div>
 
 <script>
+    /* ── Âm thanh bàn phím điện thoại (Web Audio API) ── */
+    let audioCtx = null;
+
+    function getAudioCtx() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+    }
+
+    function playClick(type) {
+        try {
+            const ctx = getAudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            filter.type = 'bandpass';
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            const now = ctx.currentTime;
+
+            if (type === 'num') {
+                // Tiếng click số — ngắn, gọn như bàn phím điện thoại
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+                filter.frequency.value = 2000;
+                filter.Q.value = 1.5;
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                osc.start(now);
+                osc.stop(now + 0.06);
+
+            } else if (type === 'denom') {
+                // Tiếng chọn mệnh giá — hơi trầm hơn, nặng hơn chút
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(900, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.07);
+                filter.frequency.value = 1500;
+                filter.Q.value = 2;
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                osc.start(now);
+                osc.stop(now + 0.09);
+
+            } else if (type === 'del') {
+                // Tiếng xoá — âm thấp hơn, dứt khoát
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+                filter.frequency.value = 800;
+                filter.Q.value = 3;
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+
+            } else if (type === 'enter') {
+                // Tiếng Enter — âm xác nhận vui tai, 2 nốt nhỏ
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                osc.start(now);
+                osc.stop(now + 0.07);
+
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1320, now + 0.07);
+                gain2.gain.setValueAtTime(0.0, now);
+                gain2.gain.setValueAtTime(0.3, now + 0.07);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+                osc2.start(now + 0.07);
+                osc2.stop(now + 0.16);
+            }
+        } catch(e) {}
+    }
+
+    /* ── Logic app ── */
     let list = [], d = null, q = "";
 
     function sel(v, el) {
