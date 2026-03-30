@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bản Kê Tiền Mặt</title>
+    <title>BẢN KÊ TIỀN MẶT VER 2.0</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f1117">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bản Kê">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -38,6 +44,19 @@
             overflow: hidden;
         }
 
+        /* ── Hiệu ứng rung khi nhấn phím ── */
+        @keyframes vibrate {
+            0%   { transform: translate(0, 0); }
+            20%  { transform: translate(-2px, 1px); }
+            40%  { transform: translate(2px, -1px); }
+            60%  { transform: translate(-1px, 2px); }
+            80%  { transform: translate(1px, -1px); }
+            100% { transform: translate(0, 0); }
+        }
+        .vibrating {
+            animation: vibrate 0.18s linear !important;
+        }
+
         /* ── Header ── */
         .app-header {
             display: flex;
@@ -45,12 +64,14 @@
             justify-content: space-between;
             padding: 0 2px;
         }
+        /* Tăng 50% font-size tiêu đề: 0.7rem → 1.05rem */
         .app-title {
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.18em;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--text-dim);
+            color: var(--accent);
+            text-shadow: 0 0 12px var(--accent-glow);
         }
         .app-dot {
             width: 8px; height: 8px;
@@ -61,28 +82,30 @@
         }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-        /* ── Screen ── */
+        /* ── Screen — tăng 50% min-height: 88px → 132px, padding, font-size ── */
         #screen {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 14px 18px;
-            min-height: 88px;
+            padding: 21px 27px;   /* 14→21, 18→27 */
+            min-height: 132px;    /* 88→132 */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
+        /* font-size 0.72rem → 1.08rem */
         #history {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.72rem;
+            font-size: 1.08rem;
             color: var(--text-dim);
             white-space: nowrap;
             overflow-x: auto;
             letter-spacing: 0.03em;
         }
+        /* font-size 2rem → 3rem */
         #current {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 2rem;
+            font-size: 3rem;
             font-weight: 700;
             color: var(--accent);
             text-align: right;
@@ -108,7 +131,7 @@
             min-height: 0;
         }
 
-        /* ── Denomination buttons ── */
+        /* ── Denomination buttons — tăng gấp đôi chiều cao: 52px → 104px ── */
         .denoms {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -116,13 +139,13 @@
         }
 
         .btn-m {
-            height: 52px;
+            height: 104px;           /* 52 → 104 */
             border: 1.5px solid transparent;
             border-radius: var(--radius-sm);
             color: #fff;
             font-family: 'IBM Plex Mono', monospace;
-            font-weight: 600;
-            font-size: 0.82rem;
+            font-weight: 700;
+            font-size: 1.3rem;       /* 0.82 → 1.3 */
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -148,7 +171,7 @@
             transform: scale(1.03);
         }
 
-        /* Denomination colors — refined palette */
+        /* Denomination colors */
         .m500 { background: linear-gradient(145deg, #00695c, #004d40); }
         .m200 { background: linear-gradient(145deg, #b71c1c, #7f0000); }
         .m100 { background: linear-gradient(145deg, #2e7d32, #1b5e20); }
@@ -165,6 +188,7 @@
             min-height: 0;
         }
 
+        /* Tăng font-size 50%: 1.5rem → 2.25rem */
         .btn {
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
@@ -177,7 +201,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.08s, background 0.1s;
-            font-size: 1.5rem;
+            font-size: 2.25rem;     /* 1.5 → 2.25 */
         }
         .btn:active {
             transform: scale(0.93);
@@ -192,14 +216,15 @@
             gap: 7px;
         }
 
+        /* Tăng font-size 50%: 0.65rem → 0.98rem */
         .btn-action {
             flex: 1;
             border: none;
             border-radius: var(--radius-sm);
             font-family: 'Be Vietnam Pro', sans-serif;
             font-weight: 700;
-            font-size: 0.65rem;
-            letter-spacing: 0.1em;
+            font-size: 0.98rem;     /* 0.65 → 0.98 */
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             cursor: pointer;
             display: flex;
@@ -209,7 +234,8 @@
             gap: 5px;
             transition: transform 0.08s, filter 0.1s;
         }
-        .btn-action svg { width: 18px; height: 18px; }
+        /* Tăng icon 50%: 18px → 27px */
+        .btn-action svg { width: 27px; height: 27px; }
         .btn-action:active { transform: scale(0.93); filter: brightness(0.85); }
 
         .btn-del {
@@ -225,7 +251,7 @@
             background: linear-gradient(160deg, #4ade80, #16a34a);
             color: #fff;
             flex: 2;
-            font-size: 0.7rem;
+            font-size: 1.05rem;     /* 0.7 → 1.05 */
         }
 
         /* ── Receipt overlay ── */
@@ -331,7 +357,7 @@
 
 <!-- Header -->
 <div class="app-header">
-    <span class="app-title">Bản Kê Tiền Mặt</span>
+    <span class="app-title">BẢN KÊ TIỀN MẶT VER 2.0</span>
     <div class="app-dot"></div>
 </div>
 
@@ -346,44 +372,44 @@
     <div class="left-col">
         <!-- Denominations -->
         <div class="denoms">
-            <button class="btn-m m500" onclick="playClick('denom'); sel(500000, this)">500K</button>
-            <button class="btn-m m200" onclick="playClick('denom'); sel(200000, this)">200K</button>
-            <button class="btn-m m100" onclick="playClick('denom'); sel(100000, this)">100K</button>
-            <button class="btn-m m50"  onclick="playClick('denom'); sel(50000, this)">50K</button>
-            <button class="btn-m m20"  onclick="playClick('denom'); sel(20000, this)">20K</button>
-            <button class="btn-m m10"  onclick="playClick('denom'); sel(10000, this)">10K</button>
+            <button class="btn-m m500" onclick="vibrate(this); playClick('denom'); sel(500000, this)">500K</button>
+            <button class="btn-m m200" onclick="vibrate(this); playClick('denom'); sel(200000, this)">200K</button>
+            <button class="btn-m m100" onclick="vibrate(this); playClick('denom'); sel(100000, this)">100K</button>
+            <button class="btn-m m50"  onclick="vibrate(this); playClick('denom'); sel(50000, this)">50K</button>
+            <button class="btn-m m20"  onclick="vibrate(this); playClick('denom'); sel(20000, this)">20K</button>
+            <button class="btn-m m10"  onclick="vibrate(this); playClick('denom'); sel(10000, this)">10K</button>
         </div>
 
         <!-- Numbers -->
         <div class="numbers">
-            <button class="btn" onclick="playClick('num'); num('7')">7</button>
-            <button class="btn" onclick="playClick('num'); num('8')">8</button>
-            <button class="btn" onclick="playClick('num'); num('9')">9</button>
-            <button class="btn" onclick="playClick('num'); num('4')">4</button>
-            <button class="btn" onclick="playClick('num'); num('5')">5</button>
-            <button class="btn" onclick="playClick('num'); num('6')">6</button>
-            <button class="btn" onclick="playClick('num'); num('1')">1</button>
-            <button class="btn" onclick="playClick('num'); num('2')">2</button>
-            <button class="btn" onclick="playClick('num'); num('3')">3</button>
-            <button class="btn btn-zero" onclick="playClick('num'); num('0')">0</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('7')">7</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('8')">8</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('9')">9</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('4')">4</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('5')">5</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('6')">6</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('1')">1</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('2')">2</button>
+            <button class="btn" onclick="vibrate(this); playClick('num'); num('3')">3</button>
+            <button class="btn btn-zero" onclick="vibrate(this); playClick('num'); num('0')">0</button>
         </div>
     </div>
 
     <!-- Action column -->
     <div class="right-col">
-        <button class="btn-action btn-del" onclick="playClick('del'); del()">
+        <button class="btn-action btn-del" onclick="vibrate(this); playClick('del'); del()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
             </svg>
             Xoá
         </button>
-        <button class="btn-action btn-export" onclick="playClick('num'); showReceipt()">
+        <button class="btn-action btn-export" onclick="vibrate(this); playClick('num'); showReceipt()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
             </svg>
             Xuất
         </button>
-        <button class="btn-action btn-enter" onclick="playClick('enter'); ent()">
+        <button class="btn-action btn-enter" onclick="vibrate(this); playClick('enter'); ent()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
@@ -431,7 +457,17 @@
 </div>
 
 <script>
-    /* ── Âm thanh bàn phím điện thoại (Web Audio API) ── */
+    /* ── Hiệu ứng rung khi nhấn phím ── */
+    function vibrate(el) {
+        el.classList.remove('vibrating');
+        void el.offsetWidth; // reflow để reset animation
+        el.classList.add('vibrating');
+        el.addEventListener('animationend', () => el.classList.remove('vibrating'), { once: true });
+        // Rung điện thoại (nếu hỗ trợ)
+        if (navigator.vibrate) navigator.vibrate(30);
+    }
+
+    /* ── Âm thanh bàn phím (Web Audio API) ── */
     let audioCtx = null;
 
     function getAudioCtx() {
@@ -455,7 +491,6 @@
             const now = ctx.currentTime;
 
             if (type === 'num') {
-                // Tiếng click số — ngắn, gọn như bàn phím điện thoại
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(1200, now);
                 osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
@@ -467,7 +502,6 @@
                 osc.stop(now + 0.06);
 
             } else if (type === 'denom') {
-                // Tiếng chọn mệnh giá — hơi trầm hơn, nặng hơn chút
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(900, now);
                 osc.frequency.exponentialRampToValueAtTime(600, now + 0.07);
@@ -479,7 +513,6 @@
                 osc.stop(now + 0.09);
 
             } else if (type === 'del') {
-                // Tiếng xoá — âm thấp hơn, dứt khoát
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(400, now);
                 osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
@@ -491,7 +524,6 @@
                 osc.stop(now + 0.1);
 
             } else if (type === 'enter') {
-                // Tiếng Enter — âm xác nhận vui tai, 2 nốt nhỏ
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
                 osc2.connect(gain2);
@@ -593,6 +625,15 @@
             } else {
                 alert('Hãy nhấn Lưu ảnh rồi gửi qua Zalo!');
             }
+        });
+    }
+
+    /* ── Đăng ký Service Worker (PWA) ── */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.log('SW error:', err));
         });
     }
 </script>
