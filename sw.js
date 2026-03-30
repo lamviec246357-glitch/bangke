@@ -1,7 +1,7 @@
 /* ── Service Worker — Bản Kê Tiền Mặt VER 2.0 ── */
 const CACHE_NAME = 'banke-v2';
 const ASSETS = [
-    './bangke.html',
+    './index.html',
     './manifest.json',
     './icon-192.png',
     './icon-512.png',
@@ -48,7 +48,7 @@ self.addEventListener('fetch', event => {
             }).catch(() => {
                 // Nếu offline và không có cache → trả về trang chính
                 if (event.request.destination === 'document') {
-                    return caches.match('./bangke.html');
+                    return caches.match('./index.html');
                 }
             });
         })
