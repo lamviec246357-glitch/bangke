@@ -2,7 +2,7 @@
   "name": "Bản Kê Tiền Mặt VER 2.0",
   "short_name": "Bản Kê",
   "description": "Ứng dụng bản kê tiền mặt nhanh, tiện lợi trên điện thoại",
-  "start_url": "./bangke.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1117",
   "theme_color": "#0f1117",
